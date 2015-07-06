@@ -382,8 +382,6 @@ NSString * const NXOAuth2ClientConnectionContextTokenRefresh = @"tokenRefresh";
 
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                        @"password", @"grant_type",
-                                       clientId, @"client_id",
-                                       clientSecret, @"client_secret",
                                        username, @"username",
                                        password, @"password",
                                        nil];
@@ -400,6 +398,11 @@ NSString * const NXOAuth2ClientConnectionContextTokenRefresh = @"tokenRefresh";
             [tokenRequest addValue:obj forHTTPHeaderField:key];
         }];
     }
+    
+    NSString *authStr = [NSString stringWithFormat:@"%@:%@", clientId, clientSecret];
+    NSData *authData = [authStr dataUsingEncoding:NSASCIIStringEncoding];
+    NSString *authValue = [NSString stringWithFormat:@"Basic %@", [authData base64EncodedStringWithOptions:0]];
+    [tokenRequest addValue:authValue forHTTPHeaderField:@"Authorization"];
     
     authConnection = [[NXOAuth2Connection alloc] initWithRequest:tokenRequest
                                                requestParameters:parameters
